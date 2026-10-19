@@ -22,6 +22,18 @@ import "./styles/bootstrap.css";
 import "./styles/globals.css";
 
 /**
+ * Render every page per request instead of prerendering it at build time.
+ * Prerendered pages get Next.js's default `s-maxage=31536000,
+ * stale-while-revalidate`, which lets shared caches (CDNs, proxies) serve them
+ * for up to a year.  Dynamic pages are sent with `private, no-cache, no-store`.
+ *
+ * To keep a short shared-cache window instead (less load on the server),
+ * replace this with `export const revalidate = 60`.  Next.js requires these
+ * values to be literals, so they can't be computed or read from the env.
+ */
+export const dynamic = "force-dynamic";
+
+/**
  *  Custom fonts bundled (i.e. no external requests), see
  * <https://nextjs.org/docs/pages/building-your-application/optimizing/fonts>
  */

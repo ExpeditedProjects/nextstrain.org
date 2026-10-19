@@ -59,6 +59,27 @@ export function setupApp() {
     next();
   });
 
+
+  /* Default Cache-Control for every response.
+   *
+   * Shared caches (CDNs, proxies) key on URL, but some of our URLs vary their
+   * response on the Accept header (e.g. /whoami serves HTML or JSON) or on the
+   * logged-in user.  Default to private so a shared cache never serves one
+   * client's response to another.  Routes that can be cached set their own
+   * Cache-Control, which overrides this.
+   *
+   * The default is applied only when headers are sent, because Next.js and
+   * `send` (static files) skip their own Cache-Control if one is already set.
+   */
+  app.use((req, res, next) => {
+    const writeHead = res.writeHead;
+    res.writeHead = function (...args) {
+      if (!res.hasHeader("Cache-Control")) res.setHeader("Cache-Control", "private, no-cache");
+      return writeHead.apply(this, args);
+    };
+    next();
+  });
+
   /* Authentication (authn) setup.
    *
    * Routes:
